@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const Newuser = require('../Modal/newuser');
+const Newuser = require('../Modal/User');
 
 exports.createUser = async (req, res) => {
     const { name, email, password } = req.body || {};
