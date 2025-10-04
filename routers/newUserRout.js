@@ -1,16 +1,19 @@
 const express = require("express");
 const router = express.Router();
 const verifyToken = require("../Middleware/Middleware");
-const userController = require("../controller/createuser");
 const userFriend = require("../controller/friendzoo");
+const userController =require('../controller/createuser')
+
 const Message = require("../Modal/Message");
 
 
-// router.post("/create-new", verifyToken, userController.createUser);
+router.post("/create-new", verifyToken, userController.createUser);
 router.get('/all-users', verifyToken, userController.getAllUsers);
 router.get('/my-created-users', verifyToken, userController.getUsersCreatedByAdmin);
 router.post('/newfriend/:id',verifyToken ,userFriend.addFriend)
 router.get('/myfriends', verifyToken, userFriend.getMyFriends);
+router.delete('/delete/myfriend/:id',verifyToken,userController.deletUser)
+router.patch('/update/:id',verifyToken, userController.updateUser)
 
 
 router.get("/messages/:userId", async (req, res) => {

@@ -1,3 +1,4 @@
+const { status } = require('express/lib/response');
 const mongoose = require('mongoose');
 
 const friendListSchema = new mongoose.Schema({
@@ -7,6 +8,8 @@ const friendListSchema = new mongoose.Schema({
       friendId: { type: mongoose.Schema.Types.ObjectId, ref: 'Newuser' },
       name: String,
       email: String,
+      status:String,
+      image:String,
       addedAt: Date
     }
   ]

@@ -1,6 +1,7 @@
 const User = require("../Modal/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const { status } = require("express/lib/response");
 
 exports.registerUser = async (req, res) => {
   console.log("DEBUG req.body:", req.body);
@@ -20,7 +21,20 @@ exports.registerUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new User({ name, email, password: hashedPassword });
+    let imagePath = "";
+    if (req.file) {
+      imagePath = `/uploads/${req.file.filename}`; // stored by multer
+    }
+
+    // Create new user
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      status: "offline",
+      image: imagePath,
+    });
+
     await newUser.save();
 
     const token = jwt.sign(
@@ -31,7 +45,7 @@ exports.registerUser = async (req, res) => {
 
     res.status(201).json({
       message: "User registered successfully",
-      user: { id: newUser._id, name: newUser.name, email: newUser.email },
+      user: { id: newUser._id, name: newUser.name, email: newUser.email, status: newUser.status },
       token,
     });
   } catch (err) {
@@ -63,7 +77,8 @@ exports.Login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-
+    user.status = "online";
+    await user.save();
     // Step 4: Create JWT token
     const token = jwt.sign(
       { id: user._id, email: user.email },
@@ -78,6 +93,7 @@ exports.Login = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        status: user.status
       },
       token,
     });
